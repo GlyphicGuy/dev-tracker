@@ -51,6 +51,12 @@ export async function createDeveloper(formData: FormData) {
   const start_date = (formData.get("start_date") as string) || null;
   const status = (formData.get("status") as string) || "active";
   const notes = (formData.get("notes") as string) || null;
+  const github_url = (formData.get("github_url") as string) || null;
+  const linkedin_url = (formData.get("linkedin_url") as string) || null;
+  const portfolio_url = (formData.get("portfolio_url") as string) || null;
+  const deal_amount = formData.get("deal_amount")
+    ? parseFloat(formData.get("deal_amount") as string)
+    : null;
 
   if (!full_name) {
     return { error: "Full name is required" };
@@ -66,6 +72,10 @@ export async function createDeveloper(formData: FormData) {
     start_date,
     status,
     notes,
+    github_url,
+    linkedin_url,
+    portfolio_url,
+    deal_amount,
   });
 
   if (error) return { error: error.message };
@@ -88,6 +98,12 @@ export async function updateDeveloper(id: string, formData: FormData) {
   const start_date = (formData.get("start_date") as string) || null;
   const status = (formData.get("status") as string) || "active";
   const notes = (formData.get("notes") as string) || null;
+  const github_url = (formData.get("github_url") as string) || null;
+  const linkedin_url = (formData.get("linkedin_url") as string) || null;
+  const portfolio_url = (formData.get("portfolio_url") as string) || null;
+  const deal_amount = formData.get("deal_amount")
+    ? parseFloat(formData.get("deal_amount") as string)
+    : null;
 
   if (!full_name) {
     return { error: "Full name is required" };
@@ -105,6 +121,10 @@ export async function updateDeveloper(id: string, formData: FormData) {
       start_date,
       status,
       notes,
+      github_url,
+      linkedin_url,
+      portfolio_url,
+      deal_amount,
     })
     .eq("id", id);
 

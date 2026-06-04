@@ -29,7 +29,7 @@ const navItems = [
     icon: Users,
   },
   {
-    title: "Companies",
+    title: "Companies/Clients",
     href: "/companies",
     icon: Building2,
   },

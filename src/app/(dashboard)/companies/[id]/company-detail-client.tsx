@@ -19,6 +19,9 @@ import {
   Pencil,
   Trash2,
   Users,
+  Phone,
+  Globe,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Company, Developer } from "@/lib/types";
@@ -33,12 +36,12 @@ export function CompanyDetailClient({
   const router = useRouter();
 
   async function handleDelete() {
-    if (!confirm("Are you sure you want to delete this company?")) return;
+    if (!confirm("Are you sure you want to delete this company/client?")) return;
     const result = await deleteCompany(company.id);
     if (result?.error) {
       toast.error(result.error);
     } else {
-      toast.success("Company deleted");
+      toast.success("Company/Client deleted");
       router.push("/companies");
     }
   }
@@ -79,16 +82,33 @@ export function CompanyDetailClient({
                       <span>{company.contact_email}</span>
                     </div>
                   )}
+                  {company.contact_phone && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="h-3.5 w-3.5" />
+                      <span>{company.contact_phone}</span>
+                    </div>
+                  )}
                   {company.industry && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Briefcase className="h-3.5 w-3.5" />
                       <span>{company.industry}</span>
                     </div>
                   )}
+                  {company.website_url && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                      <a
+                        href={company.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                      >
+                        {company.website_url.replace(/^https?:\/\//, "")}
+                        <ExternalLink className="h-3 w-3 opacity-50" />
+                      </a>
+                    </div>
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Added {formatDate(company.created_at)}
-                </p>
               </div>
             </div>
             <div className="flex gap-2">

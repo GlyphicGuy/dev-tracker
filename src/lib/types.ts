@@ -6,6 +6,8 @@ export interface Company {
   name: string;
   contact_person: string | null;
   contact_email: string | null;
+  contact_phone: string | null;
+  website_url: string | null;
   industry: string | null;
   created_at: string;
   developer_count?: number;
@@ -22,6 +24,10 @@ export interface Developer {
   start_date: string | null;
   status: DeveloperStatus;
   avatar_url: string | null;
+  github_url: string | null;
+  linkedin_url: string | null;
+  portfolio_url: string | null;
+  deal_amount: number | null;
   notes: string | null;
   created_at: string;
   // Joined fields

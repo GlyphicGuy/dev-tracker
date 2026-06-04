@@ -39,7 +39,9 @@ export function CompanyForm({ company, trigger, onSuccess }: CompanyFormProps) {
         toast.error(result.error);
       } else {
         toast.success(
-          isEdit ? "Company updated successfully" : "Company added successfully"
+          isEdit
+            ? "Company/Client updated successfully"
+            : "Company/Client added successfully"
         );
         setOpen(false);
         onSuccess?.();
@@ -54,18 +56,20 @@ export function CompanyForm({ company, trigger, onSuccess }: CompanyFormProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={trigger} />
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Company" : "Add Company"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit Company/Client" : "Add Company/Client"}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
-              ? "Update the company details below."
-              : "Fill in the details to add a new client company."}
+              ? "Update the company or client details below."
+              : "Fill in the details to add a new company or client."}
           </DialogDescription>
         </DialogHeader>
         <form action={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Company Name *</Label>
+            <Label htmlFor="name">Company/Client Name *</Label>
             <Input
               id="name"
               name="name"
@@ -75,34 +79,57 @@ export function CompanyForm({ company, trigger, onSuccess }: CompanyFormProps) {
               disabled={loading}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="contact_person">Contact Person</Label>
-            <Input
-              id="contact_person"
-              name="contact_person"
-              defaultValue={company?.contact_person || ""}
-              placeholder="John Smith"
-              disabled={loading}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="contact_person">Contact Person</Label>
+              <Input
+                id="contact_person"
+                name="contact_person"
+                defaultValue={company?.contact_person || ""}
+                placeholder="John Smith"
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact_email">Contact Email</Label>
+              <Input
+                id="contact_email"
+                name="contact_email"
+                type="email"
+                defaultValue={company?.contact_email || ""}
+                placeholder="john@acme.com"
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact_phone">Contact Number</Label>
+              <Input
+                id="contact_phone"
+                name="contact_phone"
+                defaultValue={company?.contact_phone || ""}
+                placeholder="+1 234 567 890"
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="industry">Industry</Label>
+              <Input
+                id="industry"
+                name="industry"
+                defaultValue={company?.industry || ""}
+                placeholder="Technology, Finance, etc."
+                disabled={loading}
+              />
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="contact_email">Contact Email</Label>
+            <Label htmlFor="website_url">Website</Label>
             <Input
-              id="contact_email"
-              name="contact_email"
-              type="email"
-              defaultValue={company?.contact_email || ""}
-              placeholder="john@acme.com"
-              disabled={loading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="industry">Industry</Label>
-            <Input
-              id="industry"
-              name="industry"
-              defaultValue={company?.industry || ""}
-              placeholder="Technology, Finance, etc."
+              id="website_url"
+              name="website_url"
+              type="url"
+              defaultValue={company?.website_url || ""}
+              placeholder="https://acme.com"
               disabled={loading}
             />
           </div>
@@ -122,9 +149,9 @@ export function CompanyForm({ company, trigger, onSuccess }: CompanyFormProps) {
                   {isEdit ? "Updating..." : "Adding..."}
                 </>
               ) : isEdit ? (
-                "Update Company"
+                "Update Company/Client"
               ) : (
-                "Add Company"
+                "Add Company/Client"
               )}
             </Button>
           </div>

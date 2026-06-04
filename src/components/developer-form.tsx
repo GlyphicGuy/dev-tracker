@@ -148,17 +148,17 @@ export function DeveloperForm({
               />
             </div>
             <div className="space-y-2">
-              <Label>Company</Label>
+              <Label>Company/Client</Label>
               <Select
                 value={companyId}
                 onValueChange={(v) => v !== null && setCompanyId(v)}
                 disabled={loading}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select company" />
+                  <SelectValue placeholder="Select company/client" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No company</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {companies.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
@@ -191,6 +191,52 @@ export function DeveloperForm({
                 name="start_date"
                 type="date"
                 defaultValue={developer?.start_date || ""}
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="deal_amount">Deal Amount ($)</Label>
+              <Input
+                id="deal_amount"
+                name="deal_amount"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={developer?.deal_amount ?? ""}
+                placeholder="5000"
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="github_url">GitHub</Label>
+              <Input
+                id="github_url"
+                name="github_url"
+                type="url"
+                defaultValue={developer?.github_url || ""}
+                placeholder="https://github.com/username"
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="linkedin_url">LinkedIn</Label>
+              <Input
+                id="linkedin_url"
+                name="linkedin_url"
+                type="url"
+                defaultValue={developer?.linkedin_url || ""}
+                placeholder="https://linkedin.com/in/username"
+                disabled={loading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="portfolio_url">Portfolio / Resume</Label>
+              <Input
+                id="portfolio_url"
+                name="portfolio_url"
+                type="url"
+                defaultValue={developer?.portfolio_url || ""}
+                placeholder="https://portfolio.dev"
                 disabled={loading}
               />
             </div>

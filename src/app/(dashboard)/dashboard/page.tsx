@@ -27,9 +27,9 @@ export default async function DashboardPage() {
           iconColor="text-emerald-400"
         />
         <StatsCard
-          title="Client Companies"
+          title="Companies/Clients"
           value={stats.totalCompanies}
-          description="Total partner companies"
+          description="Total partner companies & clients"
           icon={Building2}
           iconColor="text-blue-400"
         />

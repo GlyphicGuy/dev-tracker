@@ -21,7 +21,7 @@ export function CompaniesClient({ companies }: { companies: Company[] }) {
             trigger={
               <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
-                Add Company
+                Add Company/Client
               </Button>
             }
             onSuccess={() => router.refresh()}
@@ -31,8 +31,8 @@ export function CompaniesClient({ companies }: { companies: Company[] }) {
           <CardContent>
             <EmptyState
               icon={Building2}
-              title="No companies added yet"
-              description="Add your first client company to start assigning developers."
+              title="No companies or clients added yet"
+              description="Add your first company or client to start assigning developers."
             />
           </CardContent>
         </Card>
@@ -59,7 +59,7 @@ export function CompaniesClient({ companies }: { companies: Company[] }) {
 
       <Card className="border-border/50 bg-card/50">
         <CardHeader>
-          <CardTitle className="text-lg">Client Companies</CardTitle>
+          <CardTitle className="text-lg">Companies / Clients</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -67,7 +67,7 @@ export function CompaniesClient({ companies }: { companies: Company[] }) {
               <thead>
                 <tr className="border-b border-border/50">
                   <th className="text-left text-xs font-medium text-muted-foreground pb-3 pr-4">
-                    Company
+                    Company/Client
                   </th>
                   <th className="text-left text-xs font-medium text-muted-foreground pb-3 pr-4 hidden md:table-cell">
                     Contact

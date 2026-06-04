@@ -59,16 +59,20 @@ export async function createCompany(formData: FormData) {
   const name = formData.get("name") as string;
   const contact_person = (formData.get("contact_person") as string) || null;
   const contact_email = (formData.get("contact_email") as string) || null;
+  const contact_phone = (formData.get("contact_phone") as string) || null;
+  const website_url = (formData.get("website_url") as string) || null;
   const industry = (formData.get("industry") as string) || null;
 
   if (!name) {
-    return { error: "Company name is required" };
+    return { error: "Company/Client name is required" };
   }
 
   const { error } = await supabase.from("companies").insert({
     name,
     contact_person,
     contact_email,
+    contact_phone,
+    website_url,
     industry,
   });
 
@@ -85,15 +89,17 @@ export async function updateCompany(id: string, formData: FormData) {
   const name = formData.get("name") as string;
   const contact_person = (formData.get("contact_person") as string) || null;
   const contact_email = (formData.get("contact_email") as string) || null;
+  const contact_phone = (formData.get("contact_phone") as string) || null;
+  const website_url = (formData.get("website_url") as string) || null;
   const industry = (formData.get("industry") as string) || null;
 
   if (!name) {
-    return { error: "Company name is required" };
+    return { error: "Company/Client name is required" };
   }
 
   const { error } = await supabase
     .from("companies")
-    .update({ name, contact_person, contact_email, industry })
+    .update({ name, contact_person, contact_email, contact_phone, website_url, industry })
     .eq("id", id);
 
   if (error) return { error: error.message };
