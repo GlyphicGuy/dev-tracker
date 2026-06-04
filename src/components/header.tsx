@@ -23,6 +23,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { logout } from "@/actions/auth";
 import { useState } from "react";
+import NProgress from "nprogress";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -84,7 +85,7 @@ export function Header({ pageTitle }: HeaderProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setOpen(false)}
+                  onClick={() => { NProgress.start(); setOpen(false); }}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                     isActive

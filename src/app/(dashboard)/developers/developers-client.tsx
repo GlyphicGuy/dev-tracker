@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import NProgress from "nprogress";
 import { DeveloperForm } from "@/components/developer-form";
 import { DeveloperStatusBadge } from "@/components/status-badge";
 import { EmptyState } from "@/components/empty-state";
@@ -131,7 +132,7 @@ export function DevelopersClient({
                     <tr
                       key={dev.id}
                       className="cursor-pointer hover:bg-accent/50 transition-colors"
-                      onClick={() => router.push(`/developers/${dev.id}`)}
+                      onClick={() => { NProgress.start(); router.push(`/developers/${dev.id}`); }}
                     >
                       <td className="py-3 pr-4">
                         <div className="flex items-center gap-3">

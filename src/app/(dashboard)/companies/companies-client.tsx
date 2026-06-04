@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import NProgress from "nprogress";
 import { CompanyForm } from "@/components/company-form";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
@@ -91,7 +92,7 @@ export function CompaniesClient({ companies }: { companies: Company[] }) {
                   <tr
                     key={company.id}
                     className="group cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => router.push(`/companies/${company.id}`)}
+                    onClick={() => { NProgress.start(); router.push(`/companies/${company.id}`); }}
                   >
                     <td className="py-3 pr-4">
                       <div className="flex items-center gap-3">

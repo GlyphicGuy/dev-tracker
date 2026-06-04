@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import NProgress from "nprogress";
 import { deleteDeveloper } from "@/actions/developers";
 import { DeveloperForm } from "@/components/developer-form";
 import { AttendanceForm } from "@/components/attendance-form";
@@ -90,7 +91,7 @@ export function DeveloperProfileClient({
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => router.push("/developers")}
+        onClick={() => { NProgress.start(); router.push("/developers"); }}
         className="text-muted-foreground"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />

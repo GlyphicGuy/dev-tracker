@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import NProgress from "nprogress";
 import { deleteCompany } from "@/actions/companies";
 import { CompanyForm } from "@/components/company-form";
 import { DeveloperStatusBadge } from "@/components/status-badge";
@@ -52,7 +53,7 @@ export function CompanyDetailClient({
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => router.push("/companies")}
+        onClick={() => { NProgress.start(); router.push("/companies"); }}
         className="text-muted-foreground"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -177,7 +178,7 @@ export function CompanyDetailClient({
                     <tr
                       key={dev.id}
                       className="cursor-pointer hover:bg-accent/50 transition-colors"
-                      onClick={() => router.push(`/developers/${dev.id}`)}
+                      onClick={() => { NProgress.start(); router.push(`/developers/${dev.id}`); }}
                     >
                       <td className="py-3 pr-4">
                         <div className="flex items-center gap-3">
