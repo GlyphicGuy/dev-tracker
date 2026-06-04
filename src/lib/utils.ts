@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDate(date: string | Date | null): string {
   if (!date) return "—";
   const d = typeof date === "string" ? parseISO(date) : date;
-  return format(d, "MMM d, yyyy");
+  return format(d, "dd/MM/yyyy");
 }
 
 export function formatTime(time: string | null): string {

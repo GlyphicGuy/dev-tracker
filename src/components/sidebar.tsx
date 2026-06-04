@@ -10,7 +10,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Shield,
+  Box,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -58,13 +58,13 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 px-4 border-b border-border/50">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-          <Shield className="h-5 w-5 text-primary" />
+          <Box className="h-5 w-5 text-primary" />
         </div>
         {!collapsed && (
           <div className="flex flex-col">
-            <span className="text-sm font-bold tracking-tight">DevTracker</span>
+            <span className="text-sm font-bold tracking-tight">BYTEDOCKER</span>
             <span className="text-[10px] text-muted-foreground">
-              Workforce Manager
+              Workforce Tracker
             </span>
           </div>
         )}

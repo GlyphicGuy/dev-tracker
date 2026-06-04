@@ -9,7 +9,7 @@ import {
   CalendarCheck,
   LogOut,
   Menu,
-  Shield,
+  Box,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,13 +20,14 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { logout } from "@/actions/auth";
 import { useState } from "react";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { title: "Developers", href: "/developers", icon: Users },
-  { title: "Companies", href: "/companies", icon: Building2 },
+  { title: "Companies/Clients", href: "/companies", icon: Building2 },
   { title: "Attendance Log", href: "/attendance", icon: CalendarCheck },
 ];
 
@@ -45,7 +46,7 @@ export function Header({ pageTitle }: HeaderProps) {
       (item) =>
         pathname === item.href || pathname.startsWith(item.href + "/")
     )?.title ||
-    "DevTracker";
+    "Dashboard";
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border/50 bg-card/50 backdrop-blur-sm px-4 lg:px-6">
@@ -63,14 +64,14 @@ export function Header({ pageTitle }: HeaderProps) {
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <div className="flex h-16 items-center gap-3 px-4 border-b border-border/50">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-              <Shield className="h-5 w-5 text-primary" />
+              <Box className="h-5 w-5 text-primary" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-bold tracking-tight">
-                DevTracker
+                BYTEDOCKER
               </span>
               <span className="text-[10px] text-muted-foreground">
-                Workforce Manager
+                Workforce Tracker
               </span>
             </div>
           </div>
@@ -115,6 +116,11 @@ export function Header({ pageTitle }: HeaderProps) {
 
       {/* Page title */}
       <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
+
+      {/* Right side */}
+      <div className="ml-auto flex items-center gap-1">
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

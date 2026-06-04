@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Shield } from "lucide-react";
+import { Loader2, Box } from "lucide-react";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
@@ -36,11 +36,11 @@ export default function LoginPage() {
       <Card className="relative w-full max-w-md border-border/50 bg-card/80 backdrop-blur-sm shadow-2xl">
         <CardHeader className="text-center space-y-4 pb-2">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-            <Shield className="h-7 w-7 text-primary" />
+            <Box className="h-7 w-7 text-primary" />
           </div>
           <div>
             <CardTitle className="text-2xl font-bold tracking-tight">
-              DevTracker
+              BYTEDOCKER
             </CardTitle>
             <CardDescription className="text-muted-foreground mt-1.5">
               Sign in to manage your developer workforce
@@ -97,7 +97,7 @@ export default function LoginPage() {
           </form>
 
           <p className="text-center text-xs text-muted-foreground mt-6">
-            Platform admin access only
+            Powered by <span className="font-semibold">BYTEDOCKER</span>
           </p>
         </CardContent>
       </Card>
