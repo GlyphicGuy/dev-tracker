@@ -1,13 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { DashboardShell } from "./dashboard-shell";
+import { DevPortalShell } from "./dev-portal-shell";
 
-export default async function DashboardLayout({
+export default async function DevPortalLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Server-side role guard: only admins can access (dashboard) routes
+  // Server-side role guard: only developers can access /dev routes
   const supabase = await createClient();
   const {
     data: { user },
@@ -23,10 +23,9 @@ export default async function DashboardLayout({
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") {
-    // Non-admins are bounced to root, which routes them to their portal
+  if (profile?.role !== "developer" && profile?.role !== "admin") {
     redirect("/");
   }
 
-  return <DashboardShell>{children}</DashboardShell>;
+  return <DevPortalShell>{children}</DevPortalShell>;
 }

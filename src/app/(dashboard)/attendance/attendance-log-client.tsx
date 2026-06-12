@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/select";
 import { formatDate, formatTime } from "@/lib/utils";
 import { CalendarCheck, Filter, Search } from "lucide-react";
-import type { AttendanceLog, Developer, Company } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import type { AttendanceLog, Developer, Company, ApprovalStatus } from "@/lib/types";
 
 interface AttendanceData {
   logs: AttendanceLog[];
@@ -41,6 +42,7 @@ export function AttendanceLogClient({
   const [statusFilter, setStatusFilter] = useState("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [approvalFilter, setApprovalFilter] = useState("all");
   const [isPending, startTransition] = useTransition();
 
   function applyFilters() {
@@ -51,6 +53,7 @@ export function AttendanceLogClient({
       if (statusFilter !== "all") filters.status = statusFilter;
       if (startDate) filters.start_date = startDate;
       if (endDate) filters.end_date = endDate;
+      if (approvalFilter !== "all") filters.approval_status = approvalFilter;
 
       const result = await getAttendanceLogs(filters);
       setData(result);
@@ -61,6 +64,7 @@ export function AttendanceLogClient({
     setDeveloperFilter("all");
     setCompanyFilter("all");
     setStatusFilter("all");
+    setApprovalFilter("all");
     setStartDate("");
     setEndDate("");
     startTransition(async () => {
@@ -132,6 +136,18 @@ export function AttendanceLogClient({
                   <SelectItem value="absent">Absent</SelectItem>
                   <SelectItem value="half_day">Half Day</SelectItem>
                   <SelectItem value="on_leave">On Leave</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={approvalFilter} onValueChange={(v) => v !== null && setApprovalFilter(v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Approvals" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Approvals</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="approved">Approved</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -218,6 +234,9 @@ export function AttendanceLogClient({
                     <th className="text-left text-xs font-medium text-muted-foreground pb-3 hidden lg:table-cell">
                       Work Summary
                     </th>
+                    <th className="text-left text-xs font-medium text-muted-foreground pb-3 pr-4 hidden md:table-cell">
+                      Approval
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/30">
@@ -248,6 +267,24 @@ export function AttendanceLogClient({
                         <span className="text-sm text-muted-foreground line-clamp-1 max-w-xs">
                           {log.work_summary || "—"}
                         </span>
+                      </td>
+                      <td className="py-3 pr-4 hidden md:table-cell">
+                        <Badge
+                          variant="outline"
+                          className={
+                            log.approval_status === "approved"
+                              ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20 text-xs"
+                              : log.approval_status === "rejected"
+                                ? "bg-red-500/15 text-red-400 border-red-500/20 text-xs"
+                                : "bg-amber-500/15 text-amber-400 border-amber-500/20 text-xs"
+                          }
+                        >
+                          {log.approval_status === "approved"
+                            ? "Approved"
+                            : log.approval_status === "rejected"
+                              ? "Rejected"
+                              : "Pending"}
+                        </Badge>
                       </td>
                     </tr>
                   ))}

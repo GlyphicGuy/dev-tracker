@@ -121,18 +121,23 @@ export async function getDashboardStats() {
   const supabase = await createClient();
   const today = todayDateString();
 
-  const [devResult, companyResult, todayResult] = await Promise.all([
+  const [devResult, companyResult, todayResult, pendingResult] = await Promise.all([
     supabase
       .from("developers")
       .select("id", { count: "exact" })
       .eq("status", "active"),
     supabase.from("companies").select("id", { count: "exact" }),
     supabase.from("attendance_logs").select("status").eq("date", today),
+    supabase
+      .from("work_sessions")
+      .select("id", { count: "exact" })
+      .eq("status", "submitted"),
   ]);
 
   const totalActiveDevelopers = devResult.count || 0;
   const totalCompanies = companyResult.count || 0;
   const todayLogs = todayResult.data || [];
+  const pendingApprovals = pendingResult.count || 0;
 
   const presentToday = todayLogs.filter(
     (l) => l.status === "present" || l.status === "half_day"
@@ -144,6 +149,7 @@ export async function getDashboardStats() {
     totalCompanies,
     presentToday,
     absentToday,
+    pendingApprovals,
   };
 }
 
@@ -209,6 +215,7 @@ export async function getAttendanceLogs(filters?: {
   developer_id?: string;
   company_id?: string;
   status?: string;
+  approval_status?: string;
   start_date?: string;
   end_date?: string;
   page?: number;
@@ -238,6 +245,9 @@ export async function getAttendanceLogs(filters?: {
   }
   if (filters?.end_date) {
     query = query.lte("date", filters.end_date);
+  }
+  if (filters?.approval_status) {
+    query = query.eq("approval_status", filters.approval_status);
   }
 
   const { data, error, count } = await query;

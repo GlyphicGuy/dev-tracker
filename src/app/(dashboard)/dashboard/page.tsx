@@ -4,7 +4,7 @@ import {
   getRecentActivity,
 } from "@/actions/attendance";
 import { StatsCard } from "@/components/stats-card";
-import { Users, Building2, UserCheck, UserX } from "lucide-react";
+import { Users, Building2, UserCheck, UserX, ClipboardCheck } from "lucide-react";
 import { TodayAttendanceTable } from "./today-attendance-table";
 import { RecentActivityFeed } from "./recent-activity-feed";
 
@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatsCard
           title="Active Developers"
           value={stats.totalActiveDevelopers}
@@ -46,6 +46,13 @@ export default async function DashboardPage() {
           description="Not checked in"
           icon={UserX}
           iconColor="text-red-400"
+        />
+        <StatsCard
+          title="Pending Approvals"
+          value={stats.pendingApprovals}
+          description="Awaiting company review"
+          icon={ClipboardCheck}
+          iconColor="text-amber-400"
         />
       </div>
 

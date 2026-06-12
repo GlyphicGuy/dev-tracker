@@ -1,5 +1,15 @@
 export type DeveloperStatus = "active" | "inactive" | "on_leave";
 export type AttendanceStatus = "present" | "absent" | "half_day" | "on_leave";
+export type UserRole = "admin" | "developer" | "company";
+export type SessionStatus = "running" | "stopped" | "submitted" | "approved" | "rejected";
+export type ApprovalStatus = "pending" | "approved" | "rejected";
+
+export interface Profile {
+  id: string;
+  role: UserRole;
+  display_name: string | null;
+  created_at: string;
+}
 
 export interface Company {
   id: string;
@@ -9,6 +19,7 @@ export interface Company {
   contact_phone: string | null;
   website_url: string | null;
   industry: string | null;
+  auth_user_id: string | null;
   created_at: string;
   developer_count?: number;
 }
@@ -29,10 +40,32 @@ export interface Developer {
   portfolio_url: string | null;
   deal_amount: number | null;
   notes: string | null;
+  auth_user_id: string | null;
   created_at: string;
   // Joined fields
   company?: Company | null;
   companies?: { name: string } | null;
+}
+
+export interface WorkSession {
+  id: string;
+  developer_id: string;
+  date: string;
+  start_time: string;
+  end_time: string | null;
+  duration_minutes: number | null;
+  work_description: string | null;
+  status: SessionStatus;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_notes: string | null;
+  created_at: string;
+  // Joined fields
+  developers?: {
+    full_name: string;
+    company_id: string | null;
+    companies?: { name: string } | null;
+  } | null;
 }
 
 export interface AttendanceLog {
@@ -45,6 +78,8 @@ export interface AttendanceLog {
   work_summary: string | null;
   hours_logged: number | null;
   logged_by: string | null;
+  approval_status: ApprovalStatus;
+  session_id: string | null;
   created_at: string;
   // Joined fields
   developers?: {
@@ -68,4 +103,5 @@ export interface DashboardStats {
   totalCompanies: number;
   presentToday: number;
   absentToday: number;
+  pendingApprovals: number;
 }

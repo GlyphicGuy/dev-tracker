@@ -22,7 +22,10 @@ export async function login(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  // Redirect to root — the root page (page.tsx) will read the user's
+  // profile with properly-committed session cookies and redirect to
+  // the correct portal (/dev, /company, or /dashboard).
+  redirect("/");
 }
 
 export async function logout() {
