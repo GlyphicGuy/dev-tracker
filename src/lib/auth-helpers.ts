@@ -49,7 +49,7 @@ export async function getDeveloperForCurrentUser() {
     .eq("auth_user_id", user.id)
     .single();
 
-  if (error) {
+  if (error && error.code !== "PGRST116") {
     console.error("[auth-helpers] getDeveloperForCurrentUser failed:", error.message, "for user:", user.id);
   }
 
@@ -70,10 +70,9 @@ export async function getCompanyForCurrentUser() {
     .eq("auth_user_id", user.id)
     .single();
 
-  if (error) {
+  if (error && error.code !== "PGRST116") {
     console.error("[auth-helpers] getCompanyForCurrentUser failed:", error.message, "for user:", user.id);
   }
 
   return data;
 }
-
