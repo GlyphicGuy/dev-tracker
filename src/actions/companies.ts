@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createPortalAccount } from "@/actions/developers";
 import { revalidatePath } from "next/cache";
 
 export async function getCompanies() {
@@ -67,6 +68,20 @@ export async function createCompany(formData: FormData) {
     return { error: "Company/Client name is required" };
   }
 
+  // ── Create login account if credentials provided ─────────────────
+  const login_email = (formData.get("login_email") as string) || null;
+  const login_password = (formData.get("login_password") as string) || null;
+  let auth_user_id: string | null = null;
+
+  if (login_email && login_password) {
+    if (login_password.length < 6) {
+      return { error: "Login password must be at least 6 characters" };
+    }
+    const result = await createPortalAccount(login_email, login_password, "company");
+    if (result.error) return { error: result.error };
+    auth_user_id = result.userId!;
+  }
+
   const { error } = await supabase.from("companies").insert({
     name,
     contact_person,
@@ -74,6 +89,7 @@ export async function createCompany(formData: FormData) {
     contact_phone,
     website_url,
     industry,
+    auth_user_id,
   });
 
   if (error) return { error: error.message };
@@ -97,9 +113,41 @@ export async function updateCompany(id: string, formData: FormData) {
     return { error: "Company/Client name is required" };
   }
 
+  // ── Create login account if credentials provided and not yet linked ──
+  const login_email = (formData.get("login_email") as string) || null;
+  const login_password = (formData.get("login_password") as string) || null;
+  let auth_user_id: string | null = null;
+
+  if (login_email && login_password) {
+    const { data: existing } = await supabase
+      .from("companies")
+      .select("auth_user_id")
+      .eq("id", id)
+      .single();
+
+    if (existing?.auth_user_id) {
+      return { error: "This company already has a login account" };
+    }
+
+    if (login_password.length < 6) {
+      return { error: "Login password must be at least 6 characters" };
+    }
+    const result = await createPortalAccount(login_email, login_password, "company");
+    if (result.error) return { error: result.error };
+    auth_user_id = result.userId!;
+  }
+
+  const updateData: Record<string, unknown> = {
+    name, contact_person, contact_email, contact_phone, website_url, industry,
+  };
+
+  if (auth_user_id) {
+    updateData.auth_user_id = auth_user_id;
+  }
+
   const { error } = await supabase
     .from("companies")
-    .update({ name, contact_person, contact_email, contact_phone, website_url, industry })
+    .update(updateData)
     .eq("id", id);
 
   if (error) return { error: error.message };
