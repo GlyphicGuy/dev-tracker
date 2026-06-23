@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { approveSession, rejectSession, approveAllPendingForDay } from "@/actions/reviews";
+import { approveSession, rejectSession, approveAllPending } from "@/actions/reviews";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,8 +48,7 @@ export function ReviewsClient({ reviews }: ReviewsClientProps) {
   function handleBulkApprove() {
     setIsBulkApproving(true);
     startTransition(async () => {
-      const today = new Date().toISOString().split("T")[0];
-      const result = await approveAllPendingForDay(today);
+      const result = await approveAllPending();
       if (result?.error) {
         toast.error(result.error);
       } else if (result?.success) {
@@ -98,7 +97,7 @@ export function ReviewsClient({ reviews }: ReviewsClientProps) {
             ) : (
               <CheckSquare className="h-4 w-4 mr-2" />
             )}
-            Approve All Today
+            Approve All
           </Button>
         )}
       </div>

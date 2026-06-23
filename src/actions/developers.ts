@@ -349,3 +349,17 @@ export async function createPortalAccount(
 
   return { userId };
 }
+
+export async function getDeveloperAttendanceLogs(developerId: string, limit: number = 50) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("attendance_logs")
+    .select("*")
+    .eq("developer_id", developerId)
+    .order("date", { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data || [];
+}

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { getDeveloperAttendanceLogs } from "@/actions/developers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
-import { Users, Mail, FileText, Clock, AlertCircle } from "lucide-react";
+import { Users, Mail, FileText, Clock, AlertCircle, ChevronDown } from "lucide-react";
 import { getInitials, cn } from "@/lib/utils";
 import {
   Dialog,
@@ -30,6 +31,19 @@ interface Developer {
   pendingSessionsCount: number;
 }
 
+interface AttendanceLog {
+  id: string;
+  developer_id: string;
+  date: string;
+  status: string;
+  check_in_time: string | null;
+  check_out_time: string | null;
+  work_summary: string | null;
+  hours_logged: number | null;
+  approval_status: string;
+  created_at: string;
+}
+
 interface DevelopersClientProps {
   developers: Developer[];
 }
@@ -38,6 +52,9 @@ export function DevelopersClient({ developers }: DevelopersClientProps) {
   const [selectedDeveloper, setSelectedDeveloper] = useState<Developer | null>(
     null
   );
+  const [attendanceLogs, setAttendanceLogs] = useState<AttendanceLog[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+  const [showLogs, setShowLogs] = useState(false);
 
   const getAttendanceColor = (status: string) => {
     switch (status) {
@@ -188,7 +205,7 @@ export function DevelopersClient({ developers }: DevelopersClientProps) {
       {/* Developer Detail Modal */}
       {selectedDeveloper && (
         <Dialog open={!!selectedDeveloper} onOpenChange={() => setSelectedDeveloper(null)}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Developer Details</DialogTitle>
             </DialogHeader>
@@ -307,9 +324,89 @@ export function DevelopersClient({ developers }: DevelopersClientProps) {
                 </div>
               </div>
 
+              {/* Attendance Logs Section */}
+              <div className="border-t border-border/30 pt-4">
+                <button
+                  onClick={async () => {
+                    if (!showLogs && attendanceLogs.length === 0) {
+                      setLoadingLogs(true);
+                      try {
+                        const logs = await getDeveloperAttendanceLogs(selectedDeveloper.id);
+                        setAttendanceLogs(logs);
+                      } catch (error) {
+                        console.error("Failed to load attendance logs", error);
+                      } finally {
+                        setLoadingLogs(false);
+                      }
+                    }
+                    setShowLogs(!showLogs);
+                  }}
+                  className="flex items-center justify-between w-full text-left"
+                >
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Attendance Logs
+                  </p>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 text-muted-foreground transition-transform",
+                      showLogs && "rotate-180"
+                    )}
+                  />
+                </button>
+
+                {showLogs && (
+                  <div className="mt-3">
+                    {loadingLogs ? (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        Loading attendance logs...
+                      </p>
+                    ) : attendanceLogs.length > 0 ? (
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {attendanceLogs.map((log) => (
+                          <div
+                            key={log.id}
+                            className="flex items-center justify-between p-2 rounded-md bg-muted/50 border border-border/30"
+                          >
+                            <div className="flex-1">
+                              <p className="text-xs font-medium">{log.date}</p>
+                              <p className="text-xs text-muted-foreground capitalize">
+                                {log.status.replace("_", " ")}
+                              </p>
+                              {log.hours_logged && (
+                                <p className="text-xs text-muted-foreground">
+                                  Hours: {log.hours_logged.toFixed(1)}
+                                </p>
+                              )}
+                            </div>
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "text-xs",
+                                getApprovalColor(log.approval_status),
+                                "capitalize"
+                              )}
+                            >
+                              {log.approval_status}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        No attendance logs found
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <Button
                 variant="outline"
-                onClick={() => setSelectedDeveloper(null)}
+                onClick={() => {
+                  setSelectedDeveloper(null);
+                  setShowLogs(false);
+                  setAttendanceLogs([]);
+                }}
                 className="w-full mt-4"
               >
                 Close
