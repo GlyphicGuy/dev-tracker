@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { getCompanyForCurrentUser } from "@/lib/auth-helpers";
 import type { UserRole } from "@/lib/types";
 
 export async function getDevelopers(filters?: {
@@ -39,6 +40,116 @@ export async function getDeveloper(id: string) {
 
   if (error) throw error;
   return data;
+}
+
+export async function getCompanyDevelopers() {
+  const supabase = await createClient();
+  const company = await getCompanyForCurrentUser();
+
+  if (!company) return [];
+
+  const { data, error } = await supabase
+    .from("developers")
+    .select("*")
+    .eq("company_id", company.id)
+    .order("full_name");
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getCompanyDevelopersWithStats() {
+  const supabase = await createClient();
+  const company = await getCompanyForCurrentUser();
+
+  if (!company) return [];
+
+  // Get all developers
+  const { data: developers, error: devError } = await supabase
+    .from("developers")
+    .select("*")
+    .eq("company_id", company.id)
+    .order("full_name");
+
+  if (devError) throw devError;
+
+  if (!developers || developers.length === 0) return [];
+
+  // Get attendance stats for today for each developer
+  const today = new Date().toISOString().split("T")[0];
+  
+  const developersWithStats = await Promise.all(
+    developers.map(async (dev) => {
+      const { data: todayAttendance } = await supabase
+        .from("attendance_logs")
+        .select("*")
+        .eq("developer_id", dev.id)
+        .eq("date", today)
+        .single();
+
+      const { data: pendingSessions, error: sessionError } = await supabase
+        .from("work_sessions")
+        .select("id")
+        .eq("developer_id", dev.id)
+        .eq("status", "submitted")
+        .eq("date", today);
+
+      return {
+        ...dev,
+        todayAttendance: todayAttendance || null,
+        pendingSessionsCount: pendingSessions?.length || 0,
+      };
+    })
+  );
+
+  return developersWithStats;
+}
+
+export async function getDeveloperAttendanceStats(developerId: string) {
+  const supabase = await createClient();
+
+  // Get last 30 days of attendance
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const startDate = thirtyDaysAgo.toISOString().split("T")[0];
+
+  const { data: attendance, error } = await supabase
+    .from("attendance_logs")
+    .select("*")
+    .eq("developer_id", developerId)
+    .gte("date", startDate)
+    .order("date", { ascending: false });
+
+  if (error) throw error;
+
+  // Calculate stats
+  const stats = {
+    present: 0,
+    absent: 0,
+    half_day: 0,
+    on_leave: 0,
+    total_hours: 0,
+  };
+
+  (attendance || []).forEach((log) => {
+    switch (log.status) {
+      case "present":
+        stats.present++;
+        break;
+      case "absent":
+        stats.absent++;
+        break;
+      case "half_day":
+        stats.half_day++;
+        break;
+      case "on_leave":
+        stats.on_leave++;
+        break;
+    }
+    if (log.hours_logged) stats.total_hours += log.hours_logged;
+  });
+
+  return { stats, attendance: attendance || [] };
 }
 
 export async function createDeveloper(formData: FormData) {

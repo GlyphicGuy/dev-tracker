@@ -29,6 +29,82 @@ export async function getPendingReviews() {
   return data || [];
 }
 
+export async function approveAllPendingForDay(date: string) {
+  const supabase = await createClient();
+  const company = await getCompanyForCurrentUser();
+
+  if (!company) return { error: "Company not found" };
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "User not found" };
+
+  // Get all pending sessions for the company on this date
+  const devIds =
+    (
+      await supabase
+        .from("developers")
+        .select("id")
+        .eq("company_id", company.id)
+    ).data?.map((d) => d.id) || [];
+
+  if (devIds.length === 0) return { error: "No developers found" };
+
+  const { data: pendingSessions, error: fetchError } = await supabase
+    .from("work_sessions")
+    .select("id, developer_id, date")
+    .eq("status", "submitted")
+    .eq("date", date)
+    .in("developer_id", devIds);
+
+  if (fetchError) return { error: fetchError.message };
+
+  if (!pendingSessions || pendingSessions.length === 0) {
+    return { success: true, count: 0, message: "No pending sessions for this date" };
+  }
+
+  const now = new Date().toISOString();
+
+  // Approve all pending sessions
+  const { error: updateError } = await supabase
+    .from("work_sessions")
+    .update({
+      status: "approved",
+      reviewed_by: user.id,
+      reviewed_at: now,
+      review_notes: null,
+    })
+    .eq("status", "submitted")
+    .eq("date", date)
+    .in("developer_id", devIds);
+
+  if (updateError) return { error: updateError.message };
+
+  // Update attendance logs for all approved sessions
+  for (const session of pendingSessions) {
+    await supabase
+      .from("attendance_logs")
+      .update({ approval_status: "approved" })
+      .eq("developer_id", session.developer_id)
+      .eq("date", session.date);
+  }
+
+  revalidatePath("/company");
+  revalidatePath("/company/reviews");
+  revalidatePath("/company/developers");
+  revalidatePath("/dashboard");
+  revalidatePath("/attendance");
+  revalidatePath("/dev");
+
+  return { 
+    success: true, 
+    count: pendingSessions.length,
+    message: `Approved ${pendingSessions.length} session(s)` 
+  };
+}
+
 export async function getCompanyDashboardStats() {
   const supabase = await createClient();
   const company = await getCompanyForCurrentUser();

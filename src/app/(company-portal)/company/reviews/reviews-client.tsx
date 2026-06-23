@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { approveSession, rejectSession } from "@/actions/reviews";
+import { approveSession, rejectSession, approveAllPendingForDay } from "@/actions/reviews";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +15,7 @@ import {
   Loader2,
   Clock,
   User,
+  CheckSquare,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate, getInitials } from "@/lib/utils";
@@ -29,6 +30,7 @@ export function ReviewsClient({ reviews }: ReviewsClientProps) {
   const [actionId, setActionId] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectNotes, setRejectNotes] = useState("");
+  const [isBulkApproving, setIsBulkApproving] = useState(false);
 
   function handleApprove(sessionId: string) {
     setActionId(sessionId);
@@ -40,6 +42,20 @@ export function ReviewsClient({ reviews }: ReviewsClientProps) {
         toast.success("Session approved! ✓");
       }
       setActionId(null);
+    });
+  }
+
+  function handleBulkApprove() {
+    setIsBulkApproving(true);
+    startTransition(async () => {
+      const today = new Date().toISOString().split("T")[0];
+      const result = await approveAllPendingForDay(today);
+      if (result?.error) {
+        toast.error(result.error);
+      } else if (result?.success) {
+        toast.success(result.message);
+      }
+      setIsBulkApproving(false);
     });
   }
 
@@ -64,11 +80,27 @@ export function ReviewsClient({ reviews }: ReviewsClientProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Pending Reviews</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Review and approve your developers&apos; work submissions
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Pending Reviews</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Review and approve your developers&apos; work submissions
+          </p>
+        </div>
+        {reviews.length > 0 && (
+          <Button
+            onClick={handleBulkApprove}
+            disabled={isPending || isBulkApproving}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white whitespace-nowrap"
+          >
+            {isPending && isBulkApproving ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <CheckSquare className="h-4 w-4 mr-2" />
+            )}
+            Approve All Today
+          </Button>
+        )}
       </div>
 
       {reviews.length === 0 ? (

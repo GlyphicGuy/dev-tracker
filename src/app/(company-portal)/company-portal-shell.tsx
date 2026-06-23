@@ -12,11 +12,13 @@ import {
   LayoutDashboard,
   ClipboardCheck,
   History,
+  Users,
 } from "lucide-react";
 import NProgress from "nprogress";
 
 const navItems = [
   { title: "Dashboard", href: "/company", icon: LayoutDashboard },
+  { title: "Developers", href: "/company/developers", icon: Users },
   { title: "Pending Reviews", href: "/company/reviews", icon: ClipboardCheck },
   { title: "Review History", href: "/company/history", icon: History },
 ];
